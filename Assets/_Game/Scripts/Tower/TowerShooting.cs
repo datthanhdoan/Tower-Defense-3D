@@ -31,7 +31,7 @@ public class TowerShooting : MonoBehaviour
     /// Tower settings
     /// </summary>
     [Header("Settings")]
-    [SerializeField] private bool canShoot = true;
+    private bool canShoot = true;
     [SerializeField] private float coolDownTime = 3f;
     [SerializeField] private bool keepTarget = false;
     [SerializeField] private TargetingMode targetingMode;
