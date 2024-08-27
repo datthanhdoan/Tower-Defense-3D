@@ -2,8 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-
-public class GridData
+[CreateAssetMenu(fileName = "GridData", menuName = "ScriptableObjects/GridData", order = 1)]
+public class GridData : ScriptableObject
 {
     private Dictionary<Vector3Int, CellData> _gridData = new Dictionary<Vector3Int, CellData>();
     public Dictionary<Vector3Int, CellData> GetGridData => _gridData;
@@ -14,6 +14,14 @@ public class GridData
             return;
 
         _gridData.Add(position, new CellData(position, cellState));
+    }
+
+    public void UpdateCell(Vector3Int position, CellState cellState)
+    {
+        if (!_gridData.ContainsKey(position))
+            return;
+
+        _gridData[position].SetCellState(cellState);
     }
 
     public void RemoveCell(Vector3Int position)
@@ -44,14 +52,19 @@ public class GridData
 }
 public enum CellState
 {
-    Empty,
-    Placed
+    Empty = 0,
+    Placed = 1,
+    EnemyPath = 2
 }
 public class CellData
 {
     public Vector3Int position { get; private set; }
     public CellState cellState { get; private set; }
 
+    public void SetCellState(CellState cellState)
+    {
+        this.cellState = cellState;
+    }
     public CellData(Vector3Int position, CellState cellState)
     {
         this.position = position;

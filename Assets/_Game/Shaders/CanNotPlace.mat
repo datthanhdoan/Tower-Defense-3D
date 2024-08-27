@@ -20,7 +20,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: MousePointer Mat
+  m_Name: CanNotPlace
   m_Shader: {fileID: -6465566751694194690, guid: f750b98b45da4704b8599eb29597277f,
     type: 3}
   m_Parent: {fileID: 0}
@@ -53,9 +53,9 @@ Material:
     m_Floats:
     - _QueueControl: 0
     - _QueueOffset: 0
-    - _Thickness: 0.1
+    - _Thickness: 0.0555
     m_Colors:
-    - _Color: {r: 1, g: 1, b: 1, a: 0}
+    - _Color: {r: 1, g: 0, b: 0, a: 0}
     - _DefaultScale: {r: 10, g: 10, b: 0, a: 0}
     - _Size: {r: 0.025, g: 0.025, b: 0, a: 0}
   m_BuildTextureStacks: []

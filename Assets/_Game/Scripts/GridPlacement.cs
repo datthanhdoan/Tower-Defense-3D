@@ -15,9 +15,13 @@ public class GridPlacement : MonoBehaviour
     [Header("Grid Placement")]
     [SerializeField] private LayerMask _gridLayerMask;
     [SerializeField] private Grid _grid;
+    [Tooltip("Mouse Pointer or Grid Pointer to show where the tower will be placed")]
     [SerializeField] private GameObject _mousePointer;
     [SerializeField] private GameObject _gridVisualization;
-    private GridData _gridData = new GridData();
+    [SerializeField] private GridData _gridData;
+
+    [Header("Enemy")]
+    [SerializeField] private List<Transform> _enemyPath;
 
 
     [Header("Input")]
@@ -27,6 +31,9 @@ public class GridPlacement : MonoBehaviour
     [SerializeField] private TowerDataSO _towerDataSO;
 
 
+    [Header("Materials")]
+    [SerializeField] private Material _canPlaceMaterial;
+    [SerializeField] private Material _cannotPlaceMaterial;
     /// <summary>
     /// In Game Variables
     /// </summary>
@@ -51,7 +58,9 @@ public class GridPlacement : MonoBehaviour
     private void Start()
     {
         _gridVisualization.SetActive(false);
+        _mousePointer.SetActive(false);
         SelectTower(TowerName.Archer);
+        UpdateEnemyPathGridData();
     }
 
     public void SelectTower(TowerName towerName)
@@ -64,6 +73,14 @@ public class GridPlacement : MonoBehaviour
         Debug.Log("Start Placement");
         _placementStrte = PlacementState.InPlacement;
         _gridVisualization.SetActive(true);
+        _mousePointer.SetActive(true);
+    }
+
+    private void ExitPlacing()
+    {
+        _placementStrte = PlacementState.NotInPlacement;
+        _gridVisualization.SetActive(false);
+        _mousePointer.SetActive(false);
     }
 
     private void DuringPlacement()
@@ -82,20 +99,33 @@ public class GridPlacement : MonoBehaviour
             if (_gridData.IsCellEmpty(_currentCellPosition))
             {
                 Debug.Log("Cell is Empty - Place Tower");
-                // Instantiate(_selectedTowerData.Prefab, _grid.CellToWorld(_currentCellPosition), Quaternion.identity);
-                // Center the tower on the cell
-                Instantiate(_selectedTowerData.Prefab, _grid.GetCellCenterWorld(_currentCellPosition), Quaternion.identity);
+                Vector3 pos = new Vector3(_grid.GetCellCenterWorld(_currentCellPosition).x, 0.15f, _grid.GetCellCenterWorld(_currentCellPosition).z);
+                Instantiate(_selectedTowerData.Prefab, pos, Quaternion.identity);
                 _gridData.AddCell(_currentCellPosition, CellState.Placed);
             }
         }
+    }
 
+    private void HandelInputMaterial()
+    {
+        if (_gridData.IsCellEmpty(_currentCellPosition))
+        {
+            _mousePointer.GetComponent<MeshRenderer>().material = _canPlaceMaterial;
+        }
+        else
+        {
+            _mousePointer.GetComponent<MeshRenderer>().material = _cannotPlaceMaterial;
+        }
     }
 
 
-    private void ExitPlacing()
+    private void UpdateEnemyPathGridData()
     {
-        _placementStrte = PlacementState.NotInPlacement;
-        _gridVisualization.SetActive(false);
+        foreach (var cell in _enemyPath)
+        {
+            Vector3Int cellPosition = _grid.WorldToCell(cell.position);
+            _gridData.AddCell(cellPosition, CellState.EnemyPath);
+        }
     }
 
     private void Update()
@@ -106,10 +136,9 @@ public class GridPlacement : MonoBehaviour
             _currentCellPosition = _grid.WorldToCell(currentMousePos);
 
             _mousePointer.transform.position = new Vector3(_grid.GetCellCenterWorld(_currentCellPosition).x, 0.15f, _grid.GetCellCenterWorld(_currentCellPosition).z);
+            HandelInputMaterial();
             DuringPlacement();
         }
     }
-
-
 
 }
